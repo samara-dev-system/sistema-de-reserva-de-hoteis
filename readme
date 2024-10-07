@@ -1,0 +1,31 @@
+# Gerenciamento de Restaurante
+
+Este projeto é um sistema de gerenciamento de restaurante simples, utilizando um banco de dados MySQL para armazenar informações de clientes, mesas, pedidos e itens do pedido. O objetivo é simular o controle de um restaurante, permitindo realizar consultas sobre pedidos, itens e vendas por mesa.
+
+## Estrutura do Banco de Dados
+
+O banco de dados foi projetado com quatro tabelas principais:
+
+- **clientes**: Armazena informações dos clientes.
+- **mesas**: Armazena informações sobre as mesas do restaurante.
+- **pedidos**: Armazena os pedidos feitos pelos clientes, associando-os a mesas e clientes.
+- **itenspedido**: Armazena os itens individuais de cada pedido.
+
+## Funcionalidades
+
+1. **Criação do banco de dados** com tabelas de clientes, mesas, pedidos e itens de pedido.
+2. **Inserção de dados fictícios** para simular clientes, mesas e pedidos.
+3. **Consultas**:
+   - Listar clientes e seus pedidos.
+   - Listar os itens de cada pedido.
+   - Encontrar o total de vendas por mesa.
+   - Encontrar o pedido com o maior valor.
+4. **Atualizações**:
+   - Atualizar preços de itens no pedido.
+   - Atualizar o total dos pedidos após alteração de preços.
+
+## Instruções para Uso
+
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/gerenciamento-restaurante.git
