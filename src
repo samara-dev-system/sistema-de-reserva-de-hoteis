@@ -1,0 +1,124 @@
+-- 1. Criação do Banco de Dados
+CREATE DATABASE gerenciamento_restaurante;
+USE gerenciamento_restaurante;
+
+-- 2. Criação das Tabelas
+
+-- Tabela de Clientes
+CREATE TABLE clientes (
+    idcliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    telefone VARCHAR(15),
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Tabela de Mesas
+CREATE TABLE mesas (
+    idmesa INT AUTO_INCREMENT PRIMARY KEY,
+    numeromesa INT NOT NULL,
+    capacidade INT NOT NULL
+);
+
+-- Tabela de Pedidos
+CREATE TABLE pedidos (
+    idpedido INT AUTO_INCREMENT PRIMARY KEY,
+    idcliente INT,
+    idmesa INT,
+    datapedido DATETIME NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (idcliente) REFERENCES clientes(idcliente),
+    FOREIGN KEY (idmesa) REFERENCES mesas(idmesa)
+);
+
+-- Tabela de Itens do Pedido
+CREATE TABLE itenspedido (
+    iditem INT AUTO_INCREMENT PRIMARY KEY,
+    idpedido INT,
+    descricao_item VARCHAR(255) NOT NULL,
+    quantidade INT NOT NULL,
+    precounitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (idpedido) REFERENCES pedidos(idpedido)
+);
+
+-- 3. Inserção de Dados Fictícios
+
+-- Inserindo clientes
+INSERT INTO clientes (nome, telefone, email) VALUES
+('João Silva', '99999-9999', 'joao.silva@email.com'),
+('Maria Oliveira', '98888-8888', 'maria.oliveira@email.com'),
+('Carlos Souza', '97777-7777', 'carlos.souza@email.com');
+
+-- Inserindo mesas
+INSERT INTO mesas (numeromesa, capacidade) VALUES
+(1, 4),
+(2, 2),
+(3, 6),
+(4, 4),
+(5, 2);
+
+-- Inserindo pedidos
+INSERT INTO pedidos (idcliente, idmesa, datapedido, total) VALUES
+(1, 1, '2024-10-07 12:30:00', 150.00),
+(2, 2, '2024-10-07 13:15:00', 120.50),
+(3, 3, '2024-10-07 14:00:00', 200.75);
+
+-- Inserindo itens de pedido
+INSERT INTO itenspedido (idpedido, descricao_item, quantidade, precounitario) VALUES
+(1, 'Pizza Margherita', 2, 40.00),
+(1, 'Refrigerante', 2, 5.00),
+(2, 'Hambúrguer', 1, 30.00),
+(2, 'Batata Frita', 1, 20.00),
+(3, 'Bife de Chorizo', 1, 70.00),
+(3, 'Vinho', 1, 50.00);
+
+-- 4. Consultas ao Banco de Dados
+
+-- Consulta 1: Listar todos os clientes e seus pedidos.
+SELECT c.nome, p.datapedido, p.total
+FROM clientes c
+JOIN pedidos p ON c.idcliente = p.idcliente;
+
+-- Consulta 2: Listar os itens de cada pedido.
+SELECT p.idpedido, i.descricao_item, i.quantidade, i.precounitario
+FROM itenspedido i
+JOIN pedidos p ON i.idpedido = p.idpedido
+ORDER BY p.idpedido;
+
+-- Consulta 3: Encontrar o total de vendas por mesa.
+SELECT m.numeromesa, SUM(p.total) AS total_vendas
+FROM mesas m
+JOIN pedidos p ON m.idmesa = p.idmesa
+GROUP BY m.numeromesa;
+
+-- Consulta 4: Encontrar o pedido com o maior valor.
+SELECT p.idpedido, c.nome, p.total
+FROM pedidos p
+JOIN clientes c ON p.idcliente = c.idcliente
+ORDER BY p.total DESC
+LIMIT 1;
+
+-- 5. Atualizações no Banco de Dados
+
+-- Desabilitar o Safe Update Mode temporariamente
+SET SQL_SAFE_UPDATES = 0;
+
+-- Atualizar o preço de um item específico (exemplo: pizza).
+UPDATE itenspedido
+SET precounitario = 45.00
+WHERE descricao_item = 'Pizza Margherita';
+
+-- Atualizar o total de um pedido após alteração no preço de item (exemplo: Pedido 1).
+UPDATE pedidos
+SET total = (SELECT SUM(quantidade * precounitario) FROM itenspedido WHERE idpedido = pedidos.idpedido)
+WHERE idpedido = 1;
+
+-- Reabilitar o Safe Update Mode (opcional)
+SET SQL_SAFE_UPDATES = 1;
+
+-- 6. Consultas após Atualização
+
+-- Consulta 1 (após atualização): Verifique se o preço da pizza foi atualizado.
+SELECT * FROM itenspedido WHERE descricao_item = 'Pizza Margherita';
+
+-- Consulta 2: Verifique o total atualizado do pedido 1.
+SELECT * FROM pedidos WHERE idpedido = 1;
